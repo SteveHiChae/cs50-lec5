@@ -23,7 +23,9 @@ function compose_email() {
 
   // Check the user submit the email
   document.querySelector('form').onsubmit = function() {
+    console.log('inside form')
     recipients = document.querySelector('#compose-recipients').value
+    console.log(recipients)
     subject = document.querySelector('#compose-subject').value
     body = document.querySelector('#compose-body').value
 
@@ -39,8 +41,11 @@ function compose_email() {
     .then(result => {
       console.log(result)
     })
+
     return false
   }
+
+  // load_mailbox('sent')
 }
 
 function load_mailbox(mailbox) {
@@ -55,9 +60,10 @@ function load_mailbox(mailbox) {
   const containerDiv = document.querySelector('#emails-view')
 
   const div = document.createElement('div')
-  const ul = document.createElement('ul')
-
   containerDiv.appendChild(div)
+
+  const ul = document.createElement('ul')
+  ul.setAttribute('class', 'mail-item')
   containerDiv.appendChild(ul)
 
   // Get the mails
@@ -67,11 +73,82 @@ function load_mailbox(mailbox) {
     console.log(emails)
 
     emails.forEach(element => {
-      const li = document.createElement('li')
-      containerDiv.appendChild(li)
-      li.innerHTML = ` ${element.recipients} ${element.subject} ${element.timestamp} `
+      // make innerDiv
+      const item_div = document.createElement('div')
+      item_div.addEventListener('click', function() {
+        console.log(`clicked. ${element.id}`)
+        mail_view(element.id) 
+      })
+
+      if (element.read) {
+        item_div.setAttribute('class', 'border gray-background ')
+      } else {
+        item_div.setAttribute('class', 'border white-background')
+      }
+      ul.appendChild(item_div)
+
+      // make li
+      const item_recip = document.createElement('li')
+      item_recip.innerHTML = element.recipients
+      item_recip.setAttribute('class', 'item')
+      item_div.appendChild(item_recip)
+
+      const item_sub = document.createElement('li')
+      item_sub.innerHTML = element.subject
+      item_sub.setAttribute('class', 'item')
+      item_div.appendChild(item_sub)
+
+      const item_time = document.createElement('li')
+      item_time.innerHTML = element.timestamp
+      item_time.setAttribute('class', 'timestamp')
+      item_div.appendChild(item_time)
+
     });
 
   });
 }
 
+function mail_view(mail_id) {
+  document.querySelector('#emails-view').style.display = 'block'
+  document.querySelector('#compose-view').style.display = 'none'
+
+  const email_view = document.querySelector('#emails-view')
+  const main_div = document.createElement('div')
+  email_view.appendChild(main_div)
+
+
+  fetch('/emails/'+mail_id)
+  .then(response => response.json())
+  .then(email => {
+    console.log(email)
+    const ul = document.createElement('ul')
+    main_div.appendChild(ul)
+
+    const from = document.createElement('li')
+    from.innerHTML = 'From: ' + email.sender
+    ul.appendChild(from)
+
+    const to = document.createElement('li')
+    to.innerHTML = 'To: ' + email.recipients
+    ul.appendChild(to)
+
+    const subject = document.createElement('li')
+    subject.innerHTML = 'Subject: ' + email.subject
+    ul.appendChild(subject)
+
+    const timestamp = document.createElement('li')
+    timestamp.innerHTML = 'Timestamp: ' + email.timestamp
+    ul.appendChild(timestamp)
+
+    const hr = document.createElement('hr')
+    ul.appendChild(hr)
+
+    const body = document.createElement('li')
+    body.innerHTML = email.body
+    ul.appendChild(body)
+
+
+  })
+
+
+}

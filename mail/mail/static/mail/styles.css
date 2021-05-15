@@ -1,3 +1,33 @@
 textarea {
     min-height: 400px;
 }
+
+.mail-item li {
+    display: inline;
+}
+
+li {
+    list-style-type: none;
+}
+
+.border {
+    border: 1px solid black;
+}
+
+.white-background {
+    background-color: white;
+}
+
+.gray-background {
+    background-color: gray;
+}
+
+.timestamp {
+    color:green;
+    margin-left: 50%;
+}
+
+.item {
+    margin-left: 10px;
+    margin-right: 20px;
+}
