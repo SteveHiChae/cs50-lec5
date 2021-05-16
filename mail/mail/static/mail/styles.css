@@ -8,6 +8,10 @@ textarea {
 
 li {
     list-style-type: none;
+} 
+
+ul {
+    padding-left: 0;
 }
 
 .border {
@@ -19,7 +23,16 @@ li {
 }
 
 .gray-background {
-    background-color: gray;
+    background-color:lightgrey;
+}
+
+.person {
+    font-weight: bold;
+    margin-left: 1px;
+}
+
+.subject {
+    margin-left: 20px;
 }
 
 .timestamp {
@@ -27,7 +40,4 @@ li {
     margin-left: 50%;
 }
 
-.item {
-    margin-left: 10px;
-    margin-right: 20px;
-}
+

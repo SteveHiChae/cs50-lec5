@@ -23,9 +23,7 @@ function compose_email() {
 
   // Check the user submit the email
   document.querySelector('form').onsubmit = function() {
-    console.log('inside form')
     recipients = document.querySelector('#compose-recipients').value
-    console.log(recipients)
     subject = document.querySelector('#compose-subject').value
     body = document.querySelector('#compose-body').value
 
@@ -40,6 +38,7 @@ function compose_email() {
     .then(response => response.json())
     .then(result => {
       console.log(result)
+      document.querySelector('#compose-view').innerHTML = result
     })
 
     return false
@@ -57,21 +56,19 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-  const containerDiv = document.querySelector('#emails-view')
+  const emails_view = document.querySelector('#emails-view')
 
   const div = document.createElement('div')
-  containerDiv.appendChild(div)
+  emails_view.appendChild(div)
 
   const ul = document.createElement('ul')
   ul.setAttribute('class', 'mail-item')
-  containerDiv.appendChild(ul)
+  emails_view.appendChild(ul)
 
   // Get the mails
-  fetch('/emails/inbox')
+  fetch('/emails/'+mailbox)
   .then(response => response.json())
   .then(emails => {
-    console.log(emails)
-
     emails.forEach(element => {
       // make innerDiv
       const item_div = document.createElement('div')
@@ -81,21 +78,26 @@ function load_mailbox(mailbox) {
       })
 
       if (element.read) {
-        item_div.setAttribute('class', 'border gray-background ')
+        item_div.setAttribute('class', 'border gray-background')
       } else {
         item_div.setAttribute('class', 'border white-background')
       }
       ul.appendChild(item_div)
 
       // make li
-      const item_recip = document.createElement('li')
-      item_recip.innerHTML = element.recipients
-      item_recip.setAttribute('class', 'item')
-      item_div.appendChild(item_recip)
+      console.log('mailbox: ', mailbox)
+      const person = document.createElement('li')
+      if (mailbox === 'sent') {
+        person.innerHTML = element.recipients
+      } else { 
+        person.innerHTML = element.sender
+      }
+      person.setAttribute('class', 'person')
+      item_div.appendChild(person)
 
       const item_sub = document.createElement('li')
       item_sub.innerHTML = element.subject
-      item_sub.setAttribute('class', 'item')
+      item_sub.setAttribute('class', 'subject')
       item_div.appendChild(item_sub)
 
       const item_time = document.createElement('li')
@@ -109,18 +111,29 @@ function load_mailbox(mailbox) {
 }
 
 function mail_view(mail_id) {
+
   document.querySelector('#emails-view').style.display = 'block'
   document.querySelector('#compose-view').style.display = 'none'
+
+  // Clear out fields
+  document.querySelector('#emails-view').innerHTML = ''
 
   const email_view = document.querySelector('#emails-view')
   const main_div = document.createElement('div')
   email_view.appendChild(main_div)
 
+  // Mark it as read
+  fetch('/emails/'+mail_id, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  })
 
+  // Retrive the email
   fetch('/emails/'+mail_id)
   .then(response => response.json())
   .then(email => {
-    console.log(email)
     const ul = document.createElement('ul')
     main_div.appendChild(ul)
 
@@ -140,6 +153,12 @@ function mail_view(mail_id) {
     timestamp.innerHTML = 'Timestamp: ' + email.timestamp
     ul.appendChild(timestamp)
 
+    const btn = document.createElement('button')
+    btn.innerHTML = 'Reply'
+    btn.setAttribute('class', 'btn btn-sm btn-outline-primary')
+    btn.setAttribute('id', 'reply')
+    ul.appendChild(btn)
+
     const hr = document.createElement('hr')
     ul.appendChild(hr)
 
@@ -147,8 +166,6 @@ function mail_view(mail_id) {
     body.innerHTML = email.body
     ul.appendChild(body)
 
-
   })
-
 
 }
