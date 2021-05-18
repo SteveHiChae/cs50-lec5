@@ -86,14 +86,17 @@ function load_mailbox(mailbox) {
       //   view_email(element.id, mailbox) 
       // })
 
-      // if (element.read) {
-      //   item_div.setAttribute('class', 'border gray-background')
-      // } else {
-      //   item_div.setAttribute('class', 'border white-background')
-      // }
 
       // 2. make first tr : row
       const tr = document.createElement('tr')
+        tr.addEventListener('click', function() {
+        view_email(element.id, mailbox) 
+      })
+      if (element.read) {
+        tr.setAttribute('class', 'border gray-background')
+      } else {
+        tr.setAttribute('class', 'border white-background')
+      }
 
       // 3. make 1st td : first column (recipient or sender)
       const td1 = document.createElement('td')
@@ -255,11 +258,12 @@ function reply_email(mail_id) {
 
   // Check the user submit the email
   document.querySelector('form').onsubmit = function() {
+
     recipients = document.querySelector('#compose-recipients').value
     subject = document.querySelector('#compose-subject').value
     body = document.querySelector('#compose-body').value
 
-    fetch('/emails'+mail_id, {
+    fetch('/emails', {
       method: 'POST',
       body: JSON.stringify({
         recipients: recipients,
