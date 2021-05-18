@@ -61,76 +61,106 @@ function load_mailbox(mailbox) {
   const div = document.createElement('div')
   emails_view.appendChild(div)
 
-  const table = document.createElement('table')
+  const ul = document.createElement('ul')
+  ul.setAttribute('class', 'mail-item')
+  emails_view.appendChild(ul)
 
   // Get the mails
   fetch('/emails/'+mailbox)
   .then(response => response.json())
   .then(emails => {
+    const table = document.createElement('table')
     emails.forEach(element => {
+      // make a row for an email
+      // <div>
+      //   <li>recipients / sender </li>
+      //   <li>subject </li>
+      //   <li>timestamp </li>
+      // </div>
 
-      // make table
+      // => table
       // <table>
-      //     1     2    3   4
       //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
       //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
       //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
       // </table>
 
+      const item_div = document.createElement('div')
+      item_div.addEventListener('click', function() {
+        view_email(element.id, mailbox) 
+      })
 
-      // Make a row
+      if (element.read) {
+        item_div.setAttribute('class', 'border gray-background')
+      } else {
+        item_div.setAttribute('class', 'border white-background')
+      }
+      ul.appendChild(item_div)
 
-      // 1. make div
-      // const item_div = document.createElement('div')
-      // item_div.addEventListener('click', function() {
-      //   view_email(element.id, mailbox) 
-      // })
-
-      // if (element.read) {
-      //   item_div.setAttribute('class', 'border gray-background')
-      // } else {
-      //   item_div.setAttribute('class', 'border white-background')
+      // make li 
+      // const person = document.createElement('li')
+      // if (mailbox === 'sent') {
+      //   person.innerHTML = element.recipients
+      // } else { 
+      //   person.innerHTML = element.sender
       // }
+      // person.setAttribute('class', 'person')
+      // item_div.appendChild(person)
 
-      // 2. make first tr : row
+      // const item_sub = document.createElement('li')
+      // item_sub.innerHTML = element.subject
+      // item_sub.setAttribute('class', 'subject')
+      // item_div.appendChild(item_sub)
+
+      // const item_time = document.createElement('li')
+      // item_time.innerHTML = element.timestamp
+      // item_time.setAttribute('class', 'timestamp')
+      // item_div.appendChild(item_time)
+
+      // make table
+      // <table>
+      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      // </table>
+
+      // const td2 = document.createElement('td')
+      // const td3 = document.createElement('td')
+
       const tr = document.createElement('tr')
 
-      // 3. make 1st td : first column (recipient or sender)
+      // first column (recipient or sender)
       const td1 = document.createElement('td')
-      td1.setAttribute('class', 'person')
-
-      // 4. put a data into the td
-      let person = document.createTextNode(element.recipients);
-      if (mailbox !== 'sent') {
-        person = document.createTextNode(element.sender)
+      if (mailbox === 'sent') {
+        const person = document.createTextNode(element.recipients)
+        // t1.innerHTML = element.recipients
+      } else { 
+        const person = document.createTextNode(element.sender)
+        // t1.innerHTML = element.sender
       }
+      person.setAttribute('class', 'person')
       td1.appendChild(person)
       tr.appendChild(td1)
 
-      // make 2nd td : 2nd column (subject)
+      // 2nd column (subject)
       const td2 = document.createElement('td')
       const subject = document.createTextNode(element.subject)
-      td2.setAttribute('class', 'subject')
+      subject.setAttribute('class', 'subject')
       td2.appendChild(subject)
       tr.appendChild(td2)
 
       // 3rd column (timestamp)
       const td3 = document.createElement('td')
-      const timestamp = document.createTextNode(element.timestamp)
-      td3.setAttribute('class', 'timestamp')
+      const timestamp = document.createTextNode(element.tempstamp)
+      timestamp.setAttribute('class', 'timestamp')
       td3.append(timestamp)
       tr.appendChild(td3)
 
-      // item_div.appendChild(tr)
-
-      // table.appendChild(item_div)
-      table.appendChild(tr)
+      item_div.appendChild(tr)
 
     });
 
   });
-
-  div.appendChild(table)
   return false
 }
 
