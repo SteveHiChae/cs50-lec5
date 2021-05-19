@@ -38,11 +38,11 @@ function compose_email() {
     .then(response => response.json())
     .then(result => {
       document.querySelector('#compose-view').innerHTML = result
+      // How can I show this resulte???
+      return load_mailbox('sent')
     })
 
-    // return false
-    return load_mailbox('sent')
-    // going back to inbox after vising sent mailbox? Why?
+    return false
   }
 
 }
@@ -61,6 +61,8 @@ function load_mailbox(mailbox) {
   const div = document.createElement('div')
   emails_view.appendChild(div)
 
+  // make table
+  // <table>
   const table = document.createElement('table')
 
   // Get the mails
@@ -69,25 +71,14 @@ function load_mailbox(mailbox) {
   .then(emails => {
     emails.forEach(element => {
 
-      // make table
-      // <table>
-      //     1     2    3   4
-      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
-      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
-      //   <div> <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      //     1   2.1  2.2                       3               4
+      //   <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      //   <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
+      //   <tr> <td>recipients / sender </td> <td>subject</td> <td>timestamp</td> </tr> </div>
       // </table>
 
 
-      // Make a row
-
-      // 1. make div
-      // const item_div = document.createElement('div')
-      // item_div.addEventListener('click', function() {
-      //   view_email(element.id, mailbox) 
-      // })
-
-
-      // 2. make first tr : row
+      // 1. make first tr : row
       const tr = document.createElement('tr')
         tr.addEventListener('click', function() {
         view_email(element.id, mailbox) 
@@ -98,11 +89,11 @@ function load_mailbox(mailbox) {
         tr.setAttribute('class', 'border white-background')
       }
 
-      // 3. make 1st td : first column (recipient or sender)
+      // 2.1 make 1st td : first column (recipient or sender)
       const td1 = document.createElement('td')
       td1.setAttribute('class', 'person')
 
-      // 4. put a data into the td
+      // 2.2 put a data into the td
       let person = document.createTextNode(element.recipients);
       if (mailbox !== 'sent') {
         person = document.createTextNode(element.sender)
@@ -110,23 +101,20 @@ function load_mailbox(mailbox) {
       td1.appendChild(person)
       tr.appendChild(td1)
 
-      // make 2nd td : 2nd column (subject)
+      // 3 make 2nd td : 2nd column (subject)
       const td2 = document.createElement('td')
       const subject = document.createTextNode(element.subject)
       td2.setAttribute('class', 'subject')
       td2.appendChild(subject)
       tr.appendChild(td2)
 
-      // 3rd column (timestamp)
+      // 4 3rd column (timestamp)
       const td3 = document.createElement('td')
       const timestamp = document.createTextNode(element.timestamp)
       td3.setAttribute('class', 'timestamp')
       td3.append(timestamp)
       tr.appendChild(td3)
 
-      // item_div.appendChild(tr)
-
-      // table.appendChild(item_div)
       table.appendChild(tr)
 
     });
